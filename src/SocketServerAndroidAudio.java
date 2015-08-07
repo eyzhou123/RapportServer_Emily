@@ -85,12 +85,7 @@ public class SocketServerAndroidAudio extends Thread {
 			e1.printStackTrace();
 		}
 		
-		
-		byte[] buff = new byte[256];
-		byte[] imageBuff = null;
 		byte[] length_buff = new byte[4];
-		int len = 0;
-		String msg = null;
 		
 		DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, format);
 		try {
@@ -120,6 +115,7 @@ public class SocketServerAndroidAudio extends Thread {
 					while (length_bytes_read < 4) {
 						just_read = inputStream.read(length_buff, length_bytes_read, 4 - length_bytes_read);
 						if (just_read < 0) {
+							// Disconnected from Android side
 							break;
 						}
 						length_bytes_read += just_read;
@@ -130,7 +126,6 @@ public class SocketServerAndroidAudio extends Thread {
 					}
 					int updated_length = bytesToInt(length_buff);
 					audio_data = new byte[updated_length];
-					//Log.d("ERRORCHECK", "will read: " + updated_length + "bytes");
 					
 					// read audio bytes into audio_data buffer
 					int audio_bytes_read = 0;
@@ -147,16 +142,10 @@ public class SocketServerAndroidAudio extends Thread {
 					if (just_read < 0) {
 						break;
 					}
-//					File newPath = new File(SocketServer.path + SocketServerAndroid.timestamp + "/android_audio.wav");
-//					
-//
-//					AudioFormat format = new AudioFormat(8000f, 16, 1, true, false);
-//					ByteArrayInputStream b_in 	= new ByteArrayInputStream(b_out.toByteArray());
-//			    	AudioInputStream	 ais 	= new AudioInputStream(b_in, format, audio_data.length);
-//			    	AudioSystem.write(ais, AudioFileFormat.Type.WAVE, newPath);
-					
 					
 				}
+				// Stream has been cut off on the Android side (switched views or pressed back button)
+				// Make the videos
 				GUI.androidVideoProcessing();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -165,41 +154,6 @@ public class SocketServerAndroidAudio extends Thread {
 
 }
 
-	
-	
-	
-	public static void toSpeaker(byte soundbytes[]) {
-	    try {
-
-	        DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, format);
-	        sourceDataLine = (SourceDataLine) AudioSystem.getLine(dataLineInfo);
-
-	        sourceDataLine.open();
-
-//	        FloatControl volumeControl = (FloatControl) sourceDataLine.getControl(FloatControl.Type.MASTER_GAIN);
-//	        float minimum = volumeControl.getMinimum();
-//	        float maximum = volumeControl.getMaximum();
-//	        float newValue = (float)(minimum + 100.0f * (maximum - minimum) / 100.0f);
-//	        
-//	        volumeControl.setValue(newValue);
-
-	        sourceDataLine.start();
-	        sourceDataLine.open(format);
-
-	        sourceDataLine.start();
-
-	        System.out.println("format? :" + sourceDataLine.getFormat());
-
-	        sourceDataLine.write(soundbytes, 0, soundbytes.length);
-	        System.out.println(soundbytes.toString());
-	        sourceDataLine.drain();
-	        sourceDataLine.close();
-	    } catch (Exception e) {
-	        System.out.println("Not working in speakers...");
-	        e.printStackTrace();
-	    }
-	}
-	
 	public int bytesToInt(byte[] int_bytes) throws IOException {
 		return ByteBuffer.wrap(int_bytes).getInt();
 	}

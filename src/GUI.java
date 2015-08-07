@@ -54,8 +54,10 @@ public class GUI extends JFrame {
  		HandlerClass handler = new HandlerClass();
  		button.addActionListener(handler);
  		box.add(button);
-//	    button_panel.add(button);
 	    
+ 		// This button can be used any time to clear the workspace 
+ 		// of intermediate/temporary files (does nothing if those files
+ 		// don't exist). 
  		delete_button = new JButton("Delete extra files");
  		delete_button.setBackground(new Color(201, 201, 201));
  		delete_button.setForeground(Color.BLACK);
@@ -65,8 +67,7 @@ public class GUI extends JFrame {
  		delete_button.setFont(new Font("Arial", Font.PLAIN, 20));
  		delete_button.setAlignmentX(Component.CENTER_ALIGNMENT);
  		delete_button.addActionListener(new ActionListener() {
- 		  public void actionPerformed(ActionEvent e)
- 		  {
+ 		  public void actionPerformed(ActionEvent e) {
  		    deleteExtraFiles();
  		  }
  		});
@@ -77,8 +78,6 @@ public class GUI extends JFrame {
 	
 	public static void make_video_a() {
 		// Take care of closing speakers/microphone 
-//        AudioServer.speakers.drain();
-//        AudioServer.speakers.close();
         AudioServer.microphone.stop();
         AudioServer.microphone.close();
         
@@ -135,18 +134,19 @@ public class GUI extends JFrame {
 	//				+ "audio.wav -i " + SocketServer.path + "video.mp4 -strict experimental -vf 'setpts=0.7*PTS'" 
 	//				+ SocketServer.path + timestamp + ".mp4");
 			
-			Process pr1 = rt.exec(MainProgram.path_to_ffmpeg + " -i " + SocketServer.path 
+			Process makeWoZVid = rt.exec(MainProgram.path_to_ffmpeg + " -i " + SocketServer.path 
 					+ "audio.wav -i " + SocketServer.path + "video.mp4 -strict experimental " 
 					+ SocketServer.path + timestamp + ".mp4");
 			
 			try {
-				pr1.waitFor();
+				makeWoZVid.waitFor();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-			
+			// EZ: Can automatically delete files, but I have commented this out in case the other files want 
+			// to be kept.
 //    		deleteExtraFiles();
 			
 		} catch (IOException e) {
@@ -156,7 +156,8 @@ public class GUI extends JFrame {
 		
 	}
 	
-	
+	// This will take the 'android' folder containing all the images from the stream, save the
+	// android audio to a file, and then merge all these together to make the android user video
 	public static void androidVideoProcessing() {
 		Runtime rt = Runtime.getRuntime();
 		try {
@@ -178,31 +179,31 @@ public class GUI extends JFrame {
 			}
 			
 			System.out.println("Converting android frames to video...");
-			 Process pr3 = rt.exec(MainProgram.path_to_ffmpeg + " -r 12 -f image2 -s 1920x1000 -i " + SocketServer.path 
+			 Process framesToVideo = rt.exec(MainProgram.path_to_ffmpeg + " -r 12 -f image2 -s 1920x1000 -i " + SocketServer.path 
 						+ "android/image%d.jpg -vcodec libx264 -crf 25 " + SocketServer.path + "android.mp4"); 
 			 try {
-				pr3.waitFor();
+				 framesToVideo.waitFor();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			 
 			 System.out.println("Rotating android video...");
-			 Process pr4 = rt.exec(MainProgram.path_to_ffmpeg + " -i " + SocketServer.path + "android.mp4 -vf transpose=2 "
+			 Process rotating = rt.exec(MainProgram.path_to_ffmpeg + " -i " + SocketServer.path + "android.mp4 -vf transpose=2 "
 					 + SocketServer.path + "android_video.mp4"); 
 			 try {
-				pr4.waitFor();
+				 rotating.waitFor();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			 
 			System.out.println("Combining android video and audio...");
-			Process pr5 = rt.exec(MainProgram.path_to_ffmpeg + " -i " + SocketServer.path 
+			Process makeAndroidVideo = rt.exec(MainProgram.path_to_ffmpeg + " -i " + SocketServer.path 
 					+ "android_audio.wav -i " + SocketServer.path + "android_video.mp4 -c:v copy -c:a aac -strict experimental " 
 					+ SocketServer.path + "android_" + SocketServerAndroid.timestamp + ".mp4");
 			try {
-				pr5.waitFor();
+				makeAndroidVideo.waitFor();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -291,12 +292,12 @@ public class GUI extends JFrame {
 		    		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy_h.mm.ssa");
 		    		String timestamp = sdf.format(date);
 					
-		    		Process pr2 = rt.exec(MainProgram.path_to_ffmpeg + " -i " + SocketServer.path 
+		    		Process makeWoZVideo2 = rt.exec(MainProgram.path_to_ffmpeg + " -i " + SocketServer.path 
 							+ "audio.wav -i " + SocketServer.path + "video.mp4 -c:v copy -c:a aac -strict experimental " 
 							+ SocketServer.path + timestamp + ".mp4");
 		    		
 		    		try {
-						pr2.waitFor();
+		    			makeWoZVideo2.waitFor();
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

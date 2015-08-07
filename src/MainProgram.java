@@ -40,33 +40,11 @@ public class MainProgram extends JPanel implements DataListener {
 		gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		gui.setSize(750, 400);
 		gui.setVisible(true);
-		
-		
-		
-		//GrabberShow grabber = new GrabberShow();
-		
-		
+	
 		server.start();
 		audio_socket.start();
 
-		
-//		JFrame f = new JFrame("Monitor");
-//        
-//        f.addWindowListener(new WindowAdapter(){
-//                @Override
-//                public void windowClosing(WindowEvent e) {
-//                    System.exit(0);
-//                }
-//            });
-// 
-//        f.add(new MainProgram());
-//        f.pack();
-//        f.setVisible(true);
         gui.add(new MainProgram());
-		
-        
-
-		
 		
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 		    @Override

@@ -144,11 +144,6 @@ public class SocketServerAndroid extends Thread {
 		            outputStream.write(jsonObj.toString().getBytes());
 		            outputStream.flush();
 		            
-//		            // read image data
-//				    while ((len = inputStream.read(imageBuff)) != -1) {
-//	                    mBufferManager.fillBuffer(imageBuff, len);
-//	                }
-		            
 		            while(true) {
 			            int length_bytes_read = 0;
 						while (length_bytes_read < 4) {
@@ -162,10 +157,7 @@ public class SocketServerAndroid extends Thread {
 							break;
 						}
 						int updated_length = bytesToInt(length_buff);
-//						System.out.println("updated length:" + updated_length);
 						imageBuff = new byte[updated_length];
-						//mBufferManager = new BufferManager(updated_length, width, height);
-						//mBufferManager.setOnDataListener(mDataListener);
 						
 						// read image
 						int image_bytes_read = 0;
@@ -192,54 +184,21 @@ public class SocketServerAndroid extends Thread {
 	    			    	System.out.println("Buffered image is NULL");
 	    			    }
 	    			    
-	    			    // save each image to a folder
-	    			    
+	    			    // save each image to the 'android' folder
 	    			    File f = new File(SocketServer.path + "android" + "/image" + counter + ".jpg");
 	    			    ImageIO.write(bufferedImage, "JPEG", f);
 	    			    
 	                    mDataListener.onDirty(bufferedImage);
-	//					mBufferManager.fillBuffer(imageBuff, updated_length);
 	                    counter++;
 		            }
 				
 				}
 				
-//				if (mBufferManager != null) {
-//					mBufferManager.close();
-//				}
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			
 			android_is_streaming = false;
-			
-			
 			e.printStackTrace();
-//		} finally {
-//			try {
-//				if (outputStream != null) {
-//					outputStream.close();
-//					outputStream = null;
-//				}
-//				
-//				if (inputStream != null) {
-//					inputStream.close();
-//					inputStream = null;
-//				}
-//
-//				if (socket != null) {
-//					socket.close();
-//	                socket = null;
-//				}
-//				
-//				if (byteArray != null) {
-//					byteArray.close();
-//				}
-//				
-//			} catch (IOException e) {
-//
-//			}
-
 		}
 	}
 		System.out.println("Exited android server");
